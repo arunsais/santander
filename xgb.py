@@ -1,0 +1,62 @@
+import numpy as np
+import pandas as pd
+import sklearn as sk
+import xgboost as xgb
+
+from scipy import sparse
+from itertools import combinations
+from scipy.sparse import coo_matrix, hstack
+from sklearn import preprocessing
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.grid_search import GridSearchCV
+
+if __name__ == "__main__": 
+	# load data
+	df_train = pd.read_csv('train_art.csv')
+	df_test = pd.read_csv('test_art.csv')
+
+	# remove columns with 0 variance
+	remove = []
+	cols = df_train.columns
+	for i in range(len(cols)-1):
+		if df_train[cols[i]].std() == 0:
+			remove.append(cols[i])
+
+	# remove duplicated columns
+	for i in range(len(cols)-1):
+		v = df_train[cols[i]].values
+		for j in range(i+1,len(cols)):
+			if np.array_equal(v,df_train[cols[j]].values):
+				remove.append(cols[j])	
+
+	df_train.drop(remove, axis=1, inplace=True)
+	df_test.drop(remove, axis=1, inplace=True)
+	#df_train.replace(0, np.nan, True).to_sparse()
+	#df_test.replace(0, np.nan, True).to_sparse()
+	#0 if np.isnan(i) else 1
+	y = df_train.ix[:,-1]; X = pd.DataFrame.as_matrix(df_train.ix[:,1:-1])
+	y_test = df_test.ix[:,0]; X_test = pd.DataFrame.as_matrix(df_test.ix[:,1:])
+
+	# get knn features
+	#X_knn = np.load('train_knn.npz')['arr_0']; X_test_knn = np.load('test_knn.npz')['arr_0']
+	#X_knn = X_knn[:,[3]]; X_test_knn = X_test_knn[:,[3]];
+
+	#X = np.hstack([X_knn, X_bnn, X]); 
+	#X_test = np.hstack([X_test_knn, X_test_bnn, X_test])
+	# original 350,5,0.03, 0.85, 0.8
+	# mean: 0.84050, std: 0.00900, params: {'n_estimators': 350, 'subsample': 0.75, 'learning_rate': 0.03, 'colsample_bytree': 0.7, 'max_depth': 9}
+	# cross validation
+	grid = { 'max_depth':[5], 'n_estimators':[350], 'learning_rate':[0.03], 'subsample':[0.8], 'colsample_bytree':[0.7]}
+	grid_search = GridSearchCV(estimator = xgb.XGBClassifier(missing=np.nan, nthread = 4, objective= 'binary:logistic', seed=10), param_grid = grid, scoring='roc_auc', cv=5)
+	grid_search.fit(X, y)
+	print grid_search.grid_scores_, grid_search.best_score_		
+
+	# train with best parameters
+	xgb_clsf = xgb.XGBClassifier(missing=np.nan, nthread = 4, n_estimators=grid_search.best_params_['n_estimators'], max_depth=grid_search.best_params_['max_depth'], objective= 'binary:logistic',  learning_rate = grid_search.best_params_['learning_rate'], colsample_bytree=grid_search.best_params_['colsample_bytree'], subsample = grid_search.best_params_['subsample'], seed = 10)
+	xgb_clsf.fit(X, y)
+
+	# testing
+	y_test_pred = xgb_clsf.predict_proba(X_test)
+	ans = pd.DataFrame({'ID': y_test, 'TARGET' : y_test_pred[:,1]})
+	ans.to_csv('xgb_'+str(grid_search.best_score_)+'.csv', index=False, columns=['ID', 'TARGET'])
+
