@@ -52,8 +52,11 @@ We trained the following models: XGB, Random Forests, Extremely Random Trees, LR
 \caption{XGB}
 \label{4a}
 \end{figure*}
+
+\subsection{Logistic Regression}
+We tried logisitc regression with L1 and L2 regularization. The C parameter was selected by standard 5-fold cross validation with logarithmic sampling and roc-auc metric. The score with L1 regularization was considerably better (0.7924) as compared to L2 regularization (0.615). The dataset is very sparse. Since L1 encourages sparse weight vectors, it probably does a better job of finding good features from a very sparse dataset.
+
 \subsection{Neural Nets}
-\subsection{Other Models}
 \section{Ensemble}
 We experimented with various ensembling techniques for this assignment. We ensembled all the classifiers described in the previous section. Here are different approaches we tried:
 \begin{itemize}
