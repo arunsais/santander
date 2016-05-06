@@ -41,10 +41,11 @@ This feature is based on the KNN classifier. Here we first built a kd-tree on th
 extracted features such as : number of positive labels that are close to a given point. This feature resulted in over fitting (the public LB score is significantly lower than the CV score obtained when this feature was used in training).
 \subsection{Other Features}
 \begin{itemize}
-\item \textit{PCA:} Extracted the top 10 principal components of the training data.
+\item \textit{PCA:} Extracted the top 10 principal components using the entire training data and using only the important features.
 \item \textit{KMeans:} Here we clustered the training and test datasets and added the resulting cluster id of each point as a feature.
 \end{itemize}
 \section{Training}
+We trained the following models: XGB, Random Forests, Extremely Random Trees, LR, Neural Nets. Needless to say, XGB performed the best out of these classifiers. To reduce the training time, we trained most of our models with $\sim$50 features that are important. This didn't significantly change the public LB score.
 \subsection{XGB}
 \begin{figure*}[tbh]
 \includegraphics[scale = 0.4]{xgb}
@@ -54,4 +55,5 @@ extracted features such as : number of positive labels that are close to a given
 \subsection{Neural Nets}
 \subsection{Other Models}
 \section{Stacking/Blending}
+
 \end{document}
