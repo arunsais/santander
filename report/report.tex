@@ -1,0 +1,57 @@
+\documentclass{article}
+
+\usepackage[a4paper]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{times}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{mathtools}
+\usepackage{graphicx}
+\usepackage{algorithm,algorithmic}
+\usepackage{natbib}
+\begin{document}
+\title{Large Scale Machine Learning - Assignment 4\\Abhishek Sinha, Arun Sai, Ashish Bora}
+\maketitle
+\section{Feature Extraction}
+In this assignment we didn't focus much on data cleaning. We instead concentrated on feature extraction part. For data cleaning we relied on the public scripts that were posted on Kaggle. These scripts removed redundant columns and identified outliers and appropriately modified their feature values.
+Below we describe some of the features we extracted. 
+\subsection{Random Feature Combinations}
+Here we generated new features by combining original features using arithmetic operators : $+, -, * , /$.
+\begin{table}[h!]
+\begin{center}
+\begin{tabular}{ |c|c| } 
+\hline
+feature&AUC (Validation Set)\\ \hline
+$pca4-ind\_var30$&0.7459055\\ \hline
+$n0+var15$&0.7423217\\ \hline
+$pca\_all0+num\_var13\_0$&0.7143601\\ \hline
+$pca4+num\_op\_var39\_ult1$&0.7129791\\ \hline
+$pca1+var15$&0.7128941\\ \hline
+$ind\_var41\_0-pca2$&0.7096776\\ \hline
+\end{tabular}
+\end{center}
+\caption{Table shows some of the important feature combinations found. Because of the huge number of possible combinations we randomly generated combinations and picked the top few and used them in training. The last column shows the AUC obtained on the validation set by fitting a decision tree($depth=3$) using the feature on the left column. Features Names: $pca*$ denotes features obtained through PCA on the original dataset and $n0$  represents number of zeros.}
+\end{table}
+\subsection{Random Rotation of Feature Space}
+This is related to the question we posted on piazza about training better decision trees by finding a rotated feature space on which decision trees can generalize better. We couldn't come up with a principled \& efficient approach to do this. So we randomly rotated the feature space and trained a model using XGB on the rotated space. However random rotations didn't work well (AUC approximately dropped by $10\%$.)
+\subsection{KNN}
+This feature is based on the KNN classifier. Here we first built a kd-tree on the combined dataset of train and test sets. We then
+extracted features such as : number of positive labels that are close to a given point. This feature resulted in over fitting (the public LB score is significantly lower than the CV score obtained when this feature was used in training).
+\subsection{Other Features}
+\begin{itemize}
+\item \textit{PCA:} Extracted the top 10 principal components of the training data.
+\item \textit{KMeans:} Here we clustered the training and test datasets and added the resulting cluster id of each point as a feature.
+\end{itemize}
+\section{Training}
+\subsection{XGB}
+\begin{figure*}[tbh]
+\includegraphics[scale = 0.4]{xgb}
+\caption{XGB}
+\label{4a}
+\end{figure*}
+\subsection{Neural Nets}
+\subsection{Other Models}
+\section{Stacking/Blending}
+\end{document}

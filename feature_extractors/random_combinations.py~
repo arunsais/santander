@@ -1,0 +1,117 @@
+import numpy as np 
+import pandas as pd 
+import matplotlib.pyplot as plt
+from sklearn import ensemble
+from sklearn import cross_validation
+from sklearn.metrics import roc_auc_score as auc
+import time
+import random
+from sklearn.preprocessing import scale
+
+#%% load data and remove constant and duplicate columns  (taken from a kaggle script)
+
+trainDataFrame = pd.read_csv('train_art.csv')
+
+# remove constant columns
+colsToRemove = []
+for col in trainDataFrame.columns:
+    if trainDataFrame[col].std() == 0:
+        colsToRemove.append(col)
+
+trainDataFrame.drop(colsToRemove, axis=1, inplace=True)
+
+# remove duplicate columns
+colsToRemove = []
+columns = trainDataFrame.columns
+for i in range(len(columns)-1):
+    v = trainDataFrame[columns[i]].values
+    for j in range(i+1,len(columns)):
+        if np.array_equal(v,trainDataFrame[columns[j]].values):
+            colsToRemove.append(columns[j])
+
+trainDataFrame.drop(colsToRemove, axis=1, inplace=True)
+
+trainLabels = trainDataFrame['TARGET']
+trainFeatures = trainDataFrame.drop(['ID','TARGET'], axis=1)
+
+verySimpleLearner = ensemble.GradientBoostingClassifier(n_estimators=1, max_features=1, max_depth=4,
+                                                        loss='deviance', random_state=1)
+
+X_train, X_valid, y_train, y_valid = cross_validation.train_test_split(trainFeatures, trainLabels, test_size=0.5, random_state=1)
+        
+startTime = time.time()
+singleFeatureAUC_list = []
+singleFeatureAUC_dict = {}
+n_cols = len(X_train.columns)
+for i in range(800):
+    c1 = random.randint(0,n_cols-1)
+    c2 = random.randint(0,n_cols-1)
+    
+    X_trainc1 =  X_train[X_train.columns[c1]].values.reshape(-1,1); X_trainc2 = X_train[X_train.columns[c2]].values.reshape(-1,1)
+    X_testc1 = X_valid[X_train.columns[c1]].values.reshape(-1,1); X_testc2 = X_valid[X_train.columns[c2]].values.reshape(-1,1)
+    scale( X_trainc1, axis=0, with_mean=True, with_std=True, copy=False )
+    scale( X_trainc2, axis=0, with_mean=True, with_std=True, copy=False )
+    scale( X_testc1, axis=0, with_mean=True, with_std=True, copy=False )
+    scale( X_testc2, axis=0, with_mean=True, with_std=True, copy=False )
+	
+    feature_n = X_train.columns[c1] + '-'+X_train.columns[c2]
+    trainInputFeature = np.add(X_trainc1, -X_trainc2) 
+    validInputFeature = np.add(X_testc1, -X_testc2) 
+    verySimpleLearner.fit(trainInputFeature, y_train)
+    
+    trainAUC = auc(y_train, verySimpleLearner.predict_proba(trainInputFeature)[:,1])
+    validAUC = auc(y_valid, verySimpleLearner.predict_proba(validInputFeature)[:,1])
+        
+    singleFeatureAUC_list.append(validAUC)
+    singleFeatureAUC_dict[feature_n] = validAUC
+
+    feature_n = X_train.columns[c1] + '+'+X_train.columns[c2]
+    trainInputFeature = np.add(X_trainc1, X_trainc2) 
+    validInputFeature = np.add(X_testc1, X_testc2) 
+    verySimpleLearner.fit(trainInputFeature, y_train)
+    
+    trainAUC = auc(y_train, verySimpleLearner.predict_proba(trainInputFeature)[:,1])
+    validAUC = auc(y_valid, verySimpleLearner.predict_proba(validInputFeature)[:,1])
+        
+    singleFeatureAUC_list.append(validAUC)
+    singleFeatureAUC_dict[feature_n] = validAUC
+
+    feature_n = X_train.columns[c1] + '*'+X_train.columns[c2]
+    trainInputFeature = np.multiply(X_trainc1, -X_trainc2) 
+    validInputFeature = np.multiply(X_testc1, -X_testc2) 
+    verySimpleLearner.fit(trainInputFeature, y_train)
+    
+    trainAUC = auc(y_train, verySimpleLearner.predict_proba(trainInputFeature)[:,1])
+    validAUC = auc(y_valid, verySimpleLearner.predict_proba(validInputFeature)[:,1])
+        
+    singleFeatureAUC_list.append(validAUC)
+    singleFeatureAUC_dict[feature_n] = validAUC
+
+    feature_n = X_train.columns[c1] + '/'+X_train.columns[c2]
+    X_trainc2 = (X_trainc2-np.min(X_trainc2))*1.0/(np.max(X_trainc2)-np.min(X_trainc2)+0.1) + 2
+    X_testc2 = (X_testc2-np.min(X_testc2))*1.0/(np.max(X_testc2)-np.min(X_testc2)+0.1) + 2
+    trainInputFeature = np.divide(X_trainc1, X_trainc2) 
+    validInputFeature = np.divide(X_testc1, X_testc2) 
+    verySimpleLearner.fit(trainInputFeature, y_train)
+    
+    trainAUC = auc(y_train, verySimpleLearner.predict_proba(trainInputFeature)[:,1])
+    validAUC = auc(y_valid, verySimpleLearner.predict_proba(validInputFeature)[:,1])
+        
+    singleFeatureAUC_list.append(validAUC)
+    singleFeatureAUC_dict[feature_n] = validAUC
+        
+validAUC = np.array(singleFeatureAUC_list)
+timeToTrain = (time.time()-startTime)/60
+print("(min,mean,max) AUC = (%.3f,%.3f,%.3f). took %.2f minutes" %(validAUC.min(),validAUC.mean(),validAUC.max(), timeToTrain))
+
+# show the scatter plot of the individual feature performance 
+plt.figure(); plt.hist(validAUC, 50, normed=1, facecolor='blue', alpha=0.75)
+plt.xlabel('AUC'); plt.ylabel('frequency'); plt.title('single feature AUC histogram'); plt.show()
+
+singleFeatureTable = pd.DataFrame(index=range(len(singleFeatureAUC_dict.keys())), columns=['feature','AUC'])
+for k,key in enumerate(singleFeatureAUC_dict):
+    singleFeatureTable.ix[k,'feature'] = key
+    singleFeatureTable.ix[k,'AUC'] = singleFeatureAUC_dict[key]
+singleFeatureTable = singleFeatureTable.sort(columns='AUC', axis=0, ascending=False).reset_index(drop=True)
+
+print singleFeatureTable.ix[:50,:]
