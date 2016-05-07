@@ -57,6 +57,11 @@ We trained the following models: XGB, Random Forests, Extremely Random Trees, LR
 We tried logisitc regression with L1 and L2 regularization. The C parameter was selected by standard 5-fold cross validation with logarithmic sampling and roc-auc metric. The score with L1 regularization was considerably better (0.7924) as compared to L2 regularization (0.615). The dataset is very sparse. Since L1 encourages sparse weight vectors, it probably does a better job of finding good features from a very sparse dataset.
 
 \subsection{Neural Nets}
+We used the Keras script given in the forums. This uses 3 fully connected layers from 81 to 400, 400 to 200 and finally 200 to 1. It uses \emph{tanh} non-linearities. There is also a sigmoid at the end and the loss used is again binary cross entropy.  The whole network is trained with the Adam Optimizer. It seems that the author faced problems of skewed data. To address this, they just end up using only around 6000 training examples (3000 each of positive and negative) so as to make their dataset balanced. Despite getting rid of so much data, this network achieved a public Kaggle score of $0.789466$.
+\begin{figure*}[tbh]
+\includegraphics[scale = 0.7]{nn2}
+\caption{Neural Network}
+\end{figure*}
 \section{Ensemble}
 We experimented with various ensembling techniques for this assignment. We ensembled all the classifiers described in the previous section. Here are different approaches we tried:
 \begin{itemize}

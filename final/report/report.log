@@ -1,6 +1,7 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.5.24)  6 MAY 2016 17:00
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.5.24)  6 MAY 2016 19:07
 entering extended mode
  restricted \write18 enabled.
+ file:line:error style messages enabled.
  %&-line parsing enabled.
 **report.tex
 (./report.tex
@@ -495,25 +496,34 @@ File: xgb.png Graphic file (type png)
 Package pdftex.def Info: xgb.png used on input line 51.
 (pdftex.def)             Requested size: 386.63765pt x 241.69872pt.
  [2 <./xgb.png>]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 69.
+<nn2.png, id=64, 670.505pt x 77.28876pt>
+File: nn2.png Graphic file (type png)
+ <use nn2.png>
+Package pdftex.def Info: nn2.png used on input line 62.
+(pdftex.def)             Requested size: 469.35031pt x 54.10175pt.
 
-[3]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 69.
+Overfull \hbox (51.09663pt too wide) in paragraph at lines 62--63
+[][] 
+ []
+
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 74.
+[3 <./nn2.png>]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 74.
  (./report.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 69.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 69.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 74.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 74.
 Package rerunfilecheck Info: File `report.out' has not changed.
 (rerunfilecheck)             Checksum: 771EA0D83894C24A763BDA8BD0B021B4;592.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 69.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 74.
  ) 
 Here is how much of TeX's memory you used:
- 8672 strings out of 493089
- 129558 string characters out of 6134842
+ 8678 strings out of 493089
+ 129628 string characters out of 6134842
  222363 words of memory out of 5000000
- 12030 multiletter control sequences out of 15000+600000
+ 12034 multiletter control sequences out of 15000+600000
  21196 words of font info for 55 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 36i,13n,38p,591b,324s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 36i,13n,38p,636b,324s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2015/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
 exlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/te
 xlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texl
@@ -521,10 +531,10 @@ ive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texli
 ve/2015/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2015/te
 xmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2015/texmf-dist/f
 onts/type1/urw/times/utmri8a.pfb>
-Output written on report.pdf (3 pages, 155779 bytes).
+Output written on report.pdf (3 pages, 173843 bytes).
 PDF statistics:
- 95 PDF objects out of 1000 (max. 8388607)
- 81 compressed objects within 1 object stream
- 16 named destinations out of 1000 (max. 500000)
- 86 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 98 PDF objects out of 1000 (max. 8388607)
+ 82 compressed objects within 1 object stream
+ 17 named destinations out of 1000 (max. 500000)
+ 91 words of extra memory for PDF output out of 10000 (max. 10000000)
 
